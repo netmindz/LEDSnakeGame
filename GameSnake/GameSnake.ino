@@ -70,8 +70,7 @@ void loop() {
   }
   controlLoop();
   EVERY_N_MILLISECONDS_I(timingObj, DELAY_DEFAULT) { 
-    timingObj.setPeriod(snakes[0].getDelay()); // TODO: avg of all players?
-    Serial.printf("delay = %u\n",snakes[0].getDelay());
+    timingObj.setPeriod(avgDelay());
     for (int s = 0; s < MAX_SNAKES; s++) {
       snakes[s].frame();
     }
@@ -80,4 +79,19 @@ void loop() {
       snakes[s].frameClear();
     }
   }
+}
+
+int avgDelay() {
+  int a = 0;
+  int total = 0;
+  for (int s = 0; s < MAX_SNAKES; s++) {
+    if(snakes[s].isStarted()) {
+      a++;
+      total += snakes[s].getDelay();
+    }
+  }
+  if(total == 0) {
+    return DELAY_DEFAULT;
+  }
+  return (total / a);
 }

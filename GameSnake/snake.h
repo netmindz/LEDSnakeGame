@@ -214,6 +214,10 @@ class GameSnake {
     int getDelay () {
       return d;
     }
+
+    boolean isStarted() {
+      return started;
+    }
 };
 
 GameSnake snakes[MAX_SNAKES];
