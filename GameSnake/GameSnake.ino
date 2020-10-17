@@ -1,6 +1,6 @@
 #define BRIGHTNESS      150
 #define DELAY_DEFAULT   600 // Starting game speed (delay ms between frames)
-#define DELAY_MIN       10 // Max game speed
+#define DELAY_MIN       100 // Max game speed
 
 #include <FastLED.h>
 
@@ -69,7 +69,9 @@ void loop() {
     snakes[0].input(incomingByte);
   }
   controlLoop();
-  EVERY_N_MILLISECONDS( snakes[0].getDelay() ) { // TODO: avg of all players?
+  EVERY_N_MILLISECONDS_I(timingObj, DELAY_DEFAULT) { 
+    timingObj.setPeriod(snakes[0].getDelay()); // TODO: avg of all players?
+    Serial.printf("delay = %u\n",snakes[0].getDelay());
     for (int s = 0; s < MAX_SNAKES; s++) {
       snakes[s].frame();
     }
