@@ -46,7 +46,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         if (snakeIndex > (MAX_SNAKES - 1)) {
           Serial.println("MAX SNAKES!!");
           webSocket.sendTXT(num, "Sorry, player count exceeded");
-          webSocket.disconnect(num);
+//          webSocket.disconnect(num);
           return;
         }
         // send message to client
