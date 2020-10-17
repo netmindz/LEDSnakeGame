@@ -46,6 +46,8 @@ class GameSnake {
 
     void reset() {
       isDead = false;
+      leds[XY(x, y)] = CRGB::Black;
+      renderTail(CRGB::Black);
       x = random(4, (kMatrixWidth - 4));
       y = random(4, (kMatrixHeight - 4));
       if (random(0, 1) == 1) {
@@ -128,8 +130,8 @@ class GameSnake {
         return;
       }
 
-      leds[XY(x, y)] = CRGB::Black;
-      renderTail(CRGB::Black);
+      Point tailEnd = tail[l];
+      leds[XY(tailEnd.x, tailEnd.y)] = CRGB::Black;
 
       if (!isDead) {
         // move tail values up by one
