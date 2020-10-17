@@ -60,7 +60,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         snakeMap[ip] = snakeIndex;
         snakeIndex++;
 
-        // TODO: remove this and replace with proper tracking oc active players
+        // TODO: remove this and replace with proper tracking of active players
         leds[0] = CRGB::Black;
       }
       break;
