@@ -39,15 +39,15 @@ class GameSnake {
     void init(CRGB color) {
       started = true;
       colorH = color;
-      colorT = CRGB(color.g, color.g, color.b);
-      colorT = colorT.fadeToBlackBy(200);
+      colorT = CRGB(color.r, color.g, color.b);
+      colorT = colorT.fadeLightBy(200);
       reset();
     }
 
     void reset() {
       isDead = false;
-      x = random(1, (kMatrixWidth - 1));
-      y = random(1, (kMatrixHeight - 1));
+      x = random(4, (kMatrixWidth - 4));
+      y = random(4, (kMatrixHeight - 4));
       if (random(0, 1) == 1) {
         dir = 'L';
       }
@@ -189,7 +189,7 @@ class GameSnake {
 
 
     void newFruit() {
-      int i = fruit = XY(random(0, (kMatrixWidth - 1)), random(0, (kMatrixHeight - 1)));
+      int i = fruit = XY(random(1, (kMatrixWidth - 1)), random(1, (kMatrixHeight - 1)));
       if (leds[i].r != 0 || leds[i].g != 0 || leds[i].b != 0) {
         Serial.println("Fruit inside, retry");
         newFruit();
