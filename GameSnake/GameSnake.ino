@@ -12,9 +12,10 @@
 
 uint16_t XY( uint8_t x, uint8_t y)
 {
+  if ( x >= kMatrixWidth) return -1;
+  if ( y >= kMatrixHeight) return -1;
+
   uint16_t i;
-  if (x > kMatrixWidth) return 0;
-  if (y > kMatrixHeight) return 0;
 
   if ( kMatrixSerpentineLayout == false) {
     i = (y * kMatrixWidth) + x;
@@ -31,7 +32,6 @@ uint16_t XY( uint8_t x, uint8_t y)
     }
   }
 
-  if (i >= (NUM_LEDS - 1)) return 0;
   return i;
 }
 
