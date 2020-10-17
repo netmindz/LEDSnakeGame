@@ -25,7 +25,7 @@ class GameSnake {
     int l;
     int fruit;
     Point tail[200];
-    int d = 500; // TODO need to make speed per snake
+    int d = DELAY_DEFAULT; // TODO need to make speed per snake
     boolean started = false;
     boolean isDead  = false;
     int deathPulse = 0;
@@ -55,7 +55,7 @@ class GameSnake {
         dir = 'R';
       }
       l = 0;
-      d = 600;
+      d = DELAY_DEFAULT;
       Serial.println("Go!");
       newFruit();
     }
@@ -204,7 +204,11 @@ class GameSnake {
     void eat() {
       l++;
       newFruit();
-      d -= 70;
+      d -= 50;
+      if ( d < DELAY_MIN) {
+        d = DELAY_MIN;
+      }
+      Serial.printf("Reduce delay to %u", d);
     }
 
     int getDelay () {

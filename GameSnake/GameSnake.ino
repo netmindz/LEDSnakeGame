@@ -1,4 +1,6 @@
-#define BRIGHTNESS 150
+#define BRIGHTNESS      150
+#define DELAY_DEFAULT   600 // Starting game speed (delay ms between frames)
+#define DELAY_MIN       10 // Max game speed
 
 #include <FastLED.h>
 
