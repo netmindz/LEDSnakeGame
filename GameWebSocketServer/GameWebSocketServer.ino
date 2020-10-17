@@ -1,4 +1,3 @@
-#include <FastLED.h>
 #include <Arduino.h>
 
 #include <ESP8266WiFi.h>
@@ -9,8 +8,6 @@
 
 // Must copy and paste from main game
 #define MAX_SNAKES 4
-CRGB playerColors[MAX_SNAKES] = {CRGB::Blue, CRGB::DarkMagenta, CRGB::Yellow, CRGB::OrangeRed };
-
 
 #include "wifi.h"
 // Create file with the following
@@ -44,25 +41,12 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
           //webSocket.disconnect(num);
           return;
         }
-        CRGB color = playerColors[num];
-        char rgbTxt[8];
-        sprintf(rgbTxt, "#%02X%02X%02X", color.r, color.g, color.b);
-        String msg = "Connected player = " + (String) (num + 1) + " <span style=\"background: " + rgbTxt +  "\">&nbsp;&nbsp;</span>";
-        Serial.println(msg);
-        webSocket.sendTXT(num, msg);
-
         swSer.printf("%u:s\n", num);
-
-        // send message to client
-        //        webSocket.sendTXT(num, "Connected as " + (String) num);
       }
       break;
     case WStype_TEXT:
       SERIAL_DEBUG.printf("[%u] get Text: %s\n", num, payload);
       swSer.printf("%u:%s\n", num, payload);
-
-      // send message to client
-//      webSocket.sendTXT(num, "Sent command");
       break;
     case WStype_BIN:
       SERIAL_DEBUG.printf("[%u] get binary length: %u\n", num, length);
@@ -73,7 +57,6 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
 }
 
 void setup() {
-  // SERIAL_DEBUG.begin(921600);
   SERIAL_DEBUG.begin(115200);
   swSer.begin(115200);
 
@@ -134,11 +117,12 @@ void setup() {
 
 void loop() {
   webSocket.loop();
-  if(swSer.available() > 0) {
-    String input = Serial1.readStringUntil('\n');
+  if (swSer.available() > 0) {
+    String input = swSer.readStringUntil('\n');
     int index = input.indexOf(':');
-    int s = input.substring(0, index).toInt();
+    String s = input.substring(0, index);
     String msg = input.substring((index + 1));
-    webSocket.sendTXT(s, msg);
+    Serial.print("[" + s + "] Send message to WebSocket [" + msg +  "]");
+    webSocket.sendTXT(s.toInt(), msg);
   }
 }
