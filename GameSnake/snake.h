@@ -206,7 +206,7 @@ class GameSnake {
     void eat() {
       l++;
       newFruit();
-      d -= 50;
+      d = d * 0.9;
       if ( d < DELAY_MIN) {
         d = DELAY_MIN;
       }

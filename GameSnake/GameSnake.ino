@@ -62,6 +62,7 @@ int incomingByte = 0;
 void loop() {
   if (Serial.available() > 0) {
     if (!serialStart) {
+      leds[0] = CRGB::Black;
       snakes[0].init(playerColors[0]);
       serialStart = true;
     }

@@ -20,8 +20,8 @@
 // #define SECRET_SSID "";  /* Replace with your SSID */
 // #define SECRET_PSK "";   /* Replace with your WPA2 passphrase */
 // *************************************************************************
-const char ssid[] = SECRET_SSID;         /* Replace with your SSID */
-const char passphrase[] = SECRET_PSK;   /* Replace with your WPA2 passphrase */
+const char ssid[] = SECRET_SSID;
+const char passphrase[] = SECRET_PSK;
 
 
 WebSocketsServer webSocket = WebSocketsServer(81);
