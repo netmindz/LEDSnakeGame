@@ -11,8 +11,9 @@
 #endif
 #include <WebSocketsServer.h>
 //#include <Hash.h>
-#include <HashMap.h>
+#include "HashMap.h"
 
+#define SNAKE_CONTROL_WEBSOCKET
 
 #include "wifi.h"
 // Create file with the following
@@ -24,64 +25,10 @@ const char ssid[] = SECRET_SSID;
 const char passphrase[] = SECRET_PSK;
 
 
-WebSocketsServer webSocket = WebSocketsServer(81);
+// WebSocketsServer webSocket = WebSocketsServer(81);
 
-CreateHashMap (snakeMap, IPAddress, int, MAX_SNAKES);
-int snakeIndex = 0;
 
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
-
-  IPAddress ip = webSocket.remoteIP(num);
-  int s = snakeMap[ip];
-  switch (type) {
-
-    case WStype_DISCONNECTED:
-      Serial.printf("[%u] Disconnected!\n", num);
-      snakes[s].exit();
-      snakeIndex = s; // TODO: uses as next snake, but will fail if you had 3
-      break;
-
-    case WStype_CONNECTED:      {
-        Serial.printf("[%u] Connection from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
-        if (snakeIndex > (MAX_SNAKES - 1)) {
-          Serial.println("MAX SNAKES!!");
-          webSocket.sendTXT(num, "Sorry, player count exceeded");
-//          webSocket.disconnect(num);
-          return;
-        }
-        // send message to client
-        CRGB color = playerColors[snakeIndex];
-        char rgbTxt[8];
-        sprintf(rgbTxt, "#%02X%02X%02X", color.r, color.g, color.b);
-        String msg = "Connected player = " + (String) (snakeIndex + 1) + " <span style=\"background: " + rgbTxt +  "\">&nbsp;&nbsp;</span>";
-        Serial.println(msg);
-        webSocket.sendTXT(num, msg);
-        snakes[snakeIndex].init(playerColors[snakeIndex]);
-        snakeMap[ip] = snakeIndex;
-        snakeIndex++;
-
-        // TODO: remove this and replace with proper tracking of active players
-        leds[0] = CRGB::Black;
-      }
-      break;
-
-    case WStype_TEXT: {
-        Serial.printf("[%u] got Text: %s\n", num, payload);
-        for ( size_t i = 0; i < length; i++ ) {
-          snakes[s].input( payload[i] );
-        }
-        // send message to client
-        //webSocket.sendTXT(num, "Sent command");
-      }
-      break;
-
-    case WStype_BIN:
-      Serial.printf("[%u] got binary length: %u\n", num, length);
-      //      hexdump(payload, length);
-      break;
-  }
-
-}
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length); // implemented in library
 
 void controlSetup() {
   Serial.begin(115200);

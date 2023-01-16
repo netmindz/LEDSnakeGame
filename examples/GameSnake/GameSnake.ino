@@ -35,7 +35,8 @@ uint16_t XY( uint8_t x, uint8_t y)
   return i;
 }
 
-#include "snake.h"
+void controlLoop(); // see control_* include
+#include <LEDSnakeGame.h>
 
 #ifdef ESP32
 #include "control_esp.h"
@@ -57,42 +58,8 @@ void setup() {
   controlSetup();
 }
 
-boolean serialStart = false;
-int incomingByte = 0;
+
 void loop() {
-  if (Serial.available() > 0) {
-    if (!serialStart) {
-      leds[0] = CRGB::Black;
-      snakes[0].init(playerColors[0]);
-      serialStart = true;
-    }
-    incomingByte = Serial.read();
-    snakes[0].input(incomingByte);
-  }
-  controlLoop();
-  EVERY_N_MILLISECONDS_I(timingObj, DELAY_DEFAULT) { 
-    timingObj.setPeriod(avgDelay());
-    for (int s = 0; s < MAX_SNAKES; s++) {
-      snakes[s].frame();
-    }
-    ledLoop();
-    for (int s = 0; s < MAX_SNAKES; s++) {
-      snakes[s].frameClear();
-    }
-  }
+  playSnake();
 }
 
-int avgDelay() {
-  int a = 0;
-  int total = 0;
-  for (int s = 0; s < MAX_SNAKES; s++) {
-    if(snakes[s].isStarted()) {
-      a++;
-      total += snakes[s].getDelay();
-    }
-  }
-  if(total == 0) {
-    return DELAY_DEFAULT;
-  }
-  return (total / a);
-}
