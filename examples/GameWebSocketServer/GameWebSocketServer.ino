@@ -88,7 +88,7 @@ void setup() {
   MDNS.addService("http", "tcp", 80);
 
   webSocket.begin();
-  webSocket.onEvent(webSocketEvent);
+  webSocket.onEvent(webSocketEventSerial);
 }
 
 void loop() {
