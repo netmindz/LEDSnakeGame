@@ -1,15 +1,24 @@
 #include <Arduino.h>
 
+#ifdef ESP32
+#include <WiFi.h>
+#include <ESPmDNS.h>
+#else
 #include <ESP8266WiFi.h>
-#include <WebSocketsServer.h>
-#include <Hash.h>
 #include <SoftwareSerial.h>
 #include <ESP8266mDNS.h>
+#endif
+#include <WebSocketsServer.h>
+// #include <Hash.h>
+
+#ifdef ESP8266
+SoftwareSerial serialOut(D3, D4); //, false);
+#else
+#define serialOut Serial2
+#endif
+WebSocketsServer webSocket = WebSocketsServer(81);
 
 #include <LEDSnakeGame.h>
-
-// Must copy and paste from main game
-#define MAX_SNAKES 4
 
 #include "wifi.h"
 // Create file with the following
@@ -20,16 +29,12 @@
 const char ssid[] = SECRET_SSID;
 const char passphrase[] = SECRET_PSK;
 
-WebSocketsServer webSocket = WebSocketsServer(81);
 
-#define SERIAL_DEBUG Serial
-
-SoftwareSerial swSer(D3, D4); //, false);
 
 
 void setup() {
   SERIAL_DEBUG.begin(115200);
-  swSer.begin(115200);
+  serialOut.begin(115200);
 
   //Serial.setDebugOutput(true);
   SERIAL_DEBUG.setDebugOutput(true);
@@ -88,8 +93,8 @@ void setup() {
 
 void loop() {
   webSocket.loop();
-  if (swSer.available() > 0) {
-    String input = swSer.readStringUntil('\n');
+  if (serialOut.available() > 0) {
+    String input = serialOut.readStringUntil('\n');
     int index = input.indexOf(':');
     String s = input.substring(0, index);
     String msg = input.substring((index + 1));
