@@ -10,6 +10,7 @@
 #include <ESP8266mDNS.h>
 #endif
 #include <WebSocketsServer.h>
+#include <ESPAsyncWebServer.h>
 //#include <Hash.h>
 #include "HashMap.h"
 
@@ -25,8 +26,8 @@ const char ssid[] = SECRET_SSID;
 const char passphrase[] = SECRET_PSK;
 
 
-// WebSocketsServer webSocket = WebSocketsServer(81);
-
+WebSocketsServer webSocket = WebSocketsServer(81);
+AsyncWebServer server(80);
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length); // implemented in library
 

@@ -35,14 +35,14 @@ uint16_t XY( uint8_t x, uint8_t y)
   return i;
 }
 
-void controlLoop(); // see control_* include
-#include <LEDSnakeGame.h>
-
 #ifdef ESP32
 #include "control_esp.h"
 #else
 #include "control_teensy.h"
 #endif
+
+void controlLoop(); // see control_* include
+#include <LEDSnakeGame.h>
 
 
 void setup() {
@@ -57,6 +57,7 @@ void setup() {
   ledLoop();
   delay(5000);
   controlSetup();
+  setupSnake();
 }
 
 
