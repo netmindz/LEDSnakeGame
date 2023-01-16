@@ -233,8 +233,6 @@ class GameSnake {
 
 GameSnake snakes[MAX_SNAKES];
 CreateHashMap (snakeMap, IPAddress, int, MAX_SNAKES);
-int snakeIndex = 0;
-
 
 #ifdef serialOut
 void webSocketEventSerial(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
@@ -274,6 +272,7 @@ void webSocketEventSerial(uint8_t num, WStype_t type, uint8_t * payload, size_t 
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
 
+  int snakeIndex = 0;
   IPAddress ip = webSocket.remoteIP(num);
   int s = snakeMap[ip];
   switch (type) {
