@@ -6,6 +6,8 @@
 #include <SoftwareSerial.h>
 #include <ESP8266mDNS.h>
 
+#include <LEDSnakeGame.h>
+
 // Must copy and paste from main game
 #define MAX_SNAKES 4
 
@@ -24,37 +26,6 @@ WebSocketsServer webSocket = WebSocketsServer(81);
 
 SoftwareSerial swSer(D3, D4); //, false);
 
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
-
-  switch (type) {
-    case WStype_DISCONNECTED:
-      SERIAL_DEBUG.printf("[%u] Disconnected!\n", num);
-      swSer.printf("%u:e\n", num);
-      break;
-    case WStype_CONNECTED:
-      {
-        IPAddress ip = webSocket.remoteIP(num);
-        SERIAL_DEBUG.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
-        if (num > (MAX_SNAKES - 1)) {
-          Serial.println("MAX SNAKES!!");
-          webSocket.sendTXT(num, "Sorry, player count exceeded");
-          //webSocket.disconnect(num);
-          return;
-        }
-        swSer.printf("%u:s\n", num);
-      }
-      break;
-    case WStype_TEXT:
-      SERIAL_DEBUG.printf("[%u] get Text: %s\n", num, payload);
-      swSer.printf("%u:%s\n", num, payload);
-      break;
-    case WStype_BIN:
-      SERIAL_DEBUG.printf("[%u] get binary length: %u\n", num, length);
-      hexdump(payload, length);
-      break;
-  }
-
-}
 
 void setup() {
   SERIAL_DEBUG.begin(115200);
