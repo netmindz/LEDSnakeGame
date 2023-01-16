@@ -4,10 +4,12 @@
 #define MAX_SNAKES 4
 #define SERIAL_DEBUG Serial
 
-#define MAX_SNAKES 4
+#define DELAY_DEFAULT   300 // Starting game speed (delay ms between frames)
+#define DELAY_MIN       100 // Max game speed
+
+
 CRGB playerColors[MAX_SNAKES] = {CRGB::Blue, CRGB::DarkMagenta, CRGB::Yellow, CRGB::OrangeRed};
 
-WebSocketsServer webSocket = WebSocketsServer(81);
 
 
 class Point {
@@ -379,7 +381,8 @@ var websocket;
 function start() {
 	$("#controls").hide();
 
-  websocket = new WebSocket('ws://'+window.location.hostname+':81/');
+  var hostname = window.location.hostname;
+  websocket = new WebSocket('ws://'+hostname+':81/');
   setStatus("Connecting " + hostname + " ...");
   $("#connect").hide();
   websocket.onopen = function(evt) { 
@@ -436,6 +439,7 @@ button {
 	}
 
 	function setControlsVisible() {
+		$("#connect").hide();
 		$("#controls").show();
 	}
 
@@ -502,4 +506,12 @@ function checkKey(e) {
 </body>
 </html>
 )rawliteral";
+
+void setupSnake() {
+  // Route for root / web page
+  server.on("/snake", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", snake_html);
+  });
+}
+
 
