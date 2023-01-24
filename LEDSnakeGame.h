@@ -557,6 +557,8 @@ function checkKey(e) {
 )rawliteral";
 
 void setupSnake() {
+  webSocket.begin();
+  webSocket.onEvent(webSocketEvent);
   // Route for root / web page
   server.on("/snake", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/html", snake_html);
