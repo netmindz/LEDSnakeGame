@@ -35,13 +35,14 @@ uint16_t XY( uint8_t x, uint8_t y)
   return i;
 }
 
+void setupSnake(); // see LEDSnakeGame.h
+
 #ifdef ESP32
 #include "control_esp.h"
 #else
 #include "control_teensy.h"
 #endif
 
-void controlLoop(); // see control_* include
 #include <LEDSnakeGame.h>
 
 
@@ -58,6 +59,9 @@ void setup() {
   delay(5000);
   controlSetup();
   setupSnake();
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", snake_html);
+  });
 }
 
 

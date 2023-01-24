@@ -76,8 +76,7 @@ void controlSetup() {
   // Add service to MDNS-SD
   MDNS.addService("http", "tcp", 80);
 
-  webSocket.begin();
-  webSocket.onEvent(webSocketEvent);
+  setupSnake();
 
   leds[0] = CRGB::Blue;
   FastLED.show();

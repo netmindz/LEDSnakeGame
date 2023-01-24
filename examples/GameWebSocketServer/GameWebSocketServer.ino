@@ -9,6 +9,7 @@
 #include <ESP8266mDNS.h>
 #endif
 #include <WebSocketsServer.h>
+#include <ESPAsyncWebServer.h>
 // #include <Hash.h>
 
 #ifdef ESP8266
@@ -17,6 +18,7 @@ SoftwareSerial serialOut(D3, D4); //, false);
 #define serialOut Serial2
 #endif
 WebSocketsServer webSocket = WebSocketsServer(81);
+AsyncWebServer server(80);
 
 #include <LEDSnakeGame.h>
 
@@ -87,8 +89,12 @@ void setup() {
   // Add service to MDNS-SD
   MDNS.addService("http", "tcp", 80);
 
-  webSocket.begin();
-  webSocket.onEvent(webSocketEventSerial);
+  setupSnake();
+  
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", snake_html);
+  });
+
 }
 
 void loop() {

@@ -8,10 +8,9 @@
 #define DELAY_DEFAULT   300 // Starting game speed (delay ms between frames)
 #define DELAY_MIN       100 // Max game speed
 
+#ifndef serialOut
 
 CRGB playerColors[MAX_SNAKES] = {CRGB::Blue, CRGB::DarkMagenta, CRGB::Yellow, CRGB::OrangeRed};
-
-
 
 class Point {
 
@@ -236,9 +235,10 @@ class GameSnake {
 
 GameSnake snakes[MAX_SNAKES];
 CreateHashMap (snakeMap, IPAddress, int, MAX_SNAKES);
+#endif
 
 #ifdef serialOut
-void webSocketEventSerial(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
 
   switch (type) {
     case WStype_DISCONNECTED:
@@ -269,9 +269,8 @@ void webSocketEventSerial(uint8_t num, WStype_t type, uint8_t * payload, size_t 
   }
 
 }
-#endif
 
-//#ifdef SNAKE_CONTROL_WEBSOCKET
+#else
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
 
@@ -327,7 +326,6 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
   }
 
 }
-//#endif
 
 int avgDelay() {
   int a = 0;
@@ -390,6 +388,7 @@ void playSnake() {
     }
   }
 }
+#endif
 
 const char snake_html[] PROGMEM = R"rawliteral(
 <html>
