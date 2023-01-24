@@ -1,5 +1,6 @@
 #include <WebSocketsServer.h>
 #include <HashMap.h>
+#include <ArduinoJson.h>
 
 #define MAX_SNAKES 4
 #define SERIAL_DEBUG Serial
@@ -343,6 +344,25 @@ int avgDelay() {
   return (total / a);
 }
 
+void ledToWebsocket() {
+  StaticJsonDocument<5000> gameStateJson; // TODO: check size and if should be dynamic or static
+  gameStateJson["width"] = kMatrixWidth;
+  gameStateJson["height"] = kMatrixHeight;
+  JsonArray data = gameStateJson.createNestedArray("data");
+  for(uint16_t i = 0; i < NUM_LEDS; i++) {
+    if(leds[i].r != 0 || leds[i].g != 0 || leds[i].b != 0) {
+      char colorBuffer[8];
+      sprintf(colorBuffer, "#%02X%02X%02X", leds[i].r, leds[i].g, leds[i].b);
+      JsonObject pixel = data.createNestedObject();
+      pixel["i"] = i;
+      pixel["c"] = colorBuffer;
+    }
+  }
+  String output;
+  serializeJson(gameStateJson, output);
+  webSocket.broadcastTXT(output);
+}
+
 
 boolean serialStart = false;
 int incomingByte = 0;
@@ -363,6 +383,7 @@ void playSnake() {
     for (int s = 0; s < MAX_SNAKES; s++) {
       snakes[s].frame();
     }
+    ledToWebsocket();
     ledLoop();
     for (int s = 0; s < MAX_SNAKES; s++) {
       snakes[s].frameClear();
@@ -392,7 +413,7 @@ function start() {
 	  };
   websocket.onclose = function(evt) { setStatus("Lost connection :("); console.log('websocket close'); };
   websocket.onerror = function(evt) { setStatus("ERROR: " + evt); console.log(evt); $("#connect").show();};
-  websocket.onmessage =function(event) { console.debug("WebSocket message received:", event); setStatus(event.data) };
+  websocket.onmessage =function(event) { console.debug("WebSocket message received:", event); if(!event.data.startsWith("{")) { setStatus(event.data); } else { setData(event.data); } };
   
 }
 
@@ -413,7 +434,8 @@ button {
 
 <div id="status"></div>
 <div id="controls">
-	<table>
+  <canvas id="game-canvas"></canvas>
+  <table>
 		<tr>
 			<td></td>
 			<td><button id="up"></button></td>
@@ -433,10 +455,37 @@ button {
 	<!--	<button id="new">NEW Game</button> -->
 	<p>You may also use the cursor keys (recommended on desktop)</p>
 </div>
+<style>
+      canvas {
+        border: 1px solid black;
+        background-color: grey;
+      }
+</style>
 <script>
 	function setStatus(msg) {
 		$("#status").html(msg);
 	}
+
+  function setData(msg) {
+    var scale = 4;
+    const canvas = document.getElementById("game-canvas");
+    const state = JSON.parse(msg);
+    canvas.width = state.width * scale;
+    canvas.height = state.height * scale;
+    if (canvas.getContext) {
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, 300, 300); // clear canvas
+        for(var n = 0; n < state.data.length; n++) {
+          var pixel = state.data[n];
+          ctx.fillStyle = pixel.c;
+          var x = (pixel.i % state.width) * scale;
+          var y = Math.floor(pixel.i / state.width) * scale;
+          console.log(pixel);
+          console.log("x=" + x + " y=" + y);
+          ctx.fillRect(x, y, scale, scale);          
+        }
+    }
+  }
 
 	function setControlsVisible() {
 		$("#connect").hide();
